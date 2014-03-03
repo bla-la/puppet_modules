@@ -1,0 +1,11 @@
+#!/bin/bash
+# Redirect stderr so everything ends up in the log file
+exec 2>&1
+
+# Announce ourselves
+echo "<%= @service %> start"
+
+# Set environment variables
+
+# Prefix the final command with exec and ensure it runs in the foreground
+exec <%= @command %>

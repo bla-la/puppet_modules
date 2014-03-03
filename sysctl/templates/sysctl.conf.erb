@@ -1,0 +1,6 @@
+<%_sysctlParams = @defaultSysctl.merge(@userSysctl)%>
+
+<%_sysctlParams.each do |param,value| -%>
+<%=param%> = <%=value%>
+<%end -%>
+

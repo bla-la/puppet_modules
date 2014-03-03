@@ -1,0 +1,169 @@
+#!/bin/bash
+
+SCRIPT_NAME="netconsole-ena"
+
+CONFIG_DIR="/sys/kernel/config"
+NC_MOD_CFG_PATH="$CONFIG_DIR/netconsole"
+NC_TARGET_PATH="$NC_MOD_CFG_PATH/target1"
+LOCAL_INT="<%=@localInt%>"
+LOCAL_ADDR="<%=@localAddr%>"
+REMOTE_ADDR="<%=@remoteAddr%>"
+REMOTE_PORT="<%=@remotePort%>"
+REMOTE_MAC="<%=@remoteMac%>"
+DMESG_LEVEL="<%=@dmesgLevel%>"
+
+echo -n "$SCRIPT_NAME" > /proc/self/comm
+
+function error()
+{
+    echo "Error:$1 `basename $0`:$2"
+    sleep 1
+    exit 1
+}
+
+
+function check_error()
+{
+    if [ 0 -ne $? ]
+    then
+        error "$1" "${BASH_LINENO}"
+    fi
+}
+
+function do_exit()
+{
+    error "$1" "${BASH_LINENO}"
+}
+
+function check_netconsole_module_and_fs()
+{
+    if [ ! -d $CONFIG_DIR ]
+    then
+        modprobe configfs
+        check_error "Load kernel module config filesystem."
+    fi
+
+    mount | grep configfs| grep /sys/kernel/config > /dev/null
+    CH_CONFIGFS=$?
+
+    if [ 0 -ne $CH_CONFIGFS ]
+    then
+        mount none -t configfs $CONFIG_DIR
+        check_error "Mount kernel config filesystem."
+        echo "mount"
+    fi
+   
+    if [ ! -d /sys/kernel/config/netconsole ]
+    then
+        modprobe netconsole
+        check_error "Load netconsole module."
+            
+    fi
+
+    if [ ! -d $NC_TARGET_PATH ]
+    then
+        mkdir $NC_TARGET_PATH
+        check_error "Make target directory."
+    fi
+
+}
+
+
+function check_file()
+{
+    if [ -z "$1" ]
+    then
+        echo "File not set."
+        exit 1
+    fi
+
+    if [ -z "$2" ]
+    then
+        echo "Function not set."
+        exit 1
+    fi
+
+    if [ ! -e $1 ]
+    then
+        eval $2
+    fi
+}
+
+
+function check_file_content()
+{
+    if [ -z "$1" ]
+    then
+        echo "File not set."
+        exit 1
+    fi
+
+    if [ -z "$2" ]
+    then
+        echo "Content not set."
+        exit 1
+    fi
+
+
+    if [ -z "$3" ]
+    then
+        echo "Function not set."
+        exit 1
+    fi
+
+    CUR_VAL=`cat $1`
+    if [ "$2" != "$CUR_VAL" ]
+    then
+        eval $3
+    fi
+}
+
+function reconfig_netconsole()
+{
+    echo "Reconfigure netconsole."
+    echo 0 > $NC_TARGET_PATH/enabled
+    check_error "Disable netconsole."
+    echo $LOCAL_ADDR > $NC_TARGET_PATH/local_ip
+    check_error "Set local IP."
+    echo $LOCAL_INT > $NC_TARGET_PATH/dev_name
+    check_error "Set interface."
+    echo $REMOTE_ADDR > $NC_TARGET_PATH/remote_ip
+    check_error "Set remote IP."
+    echo $REMOTE_PORT > $NC_TARGET_PATH/remote_port
+    check_error "Set remote port."
+    echo $REMOTE_MAC > $NC_TARGET_PATH/remote_mac
+    check_error "Set remote MAC."
+
+    echo 1 > $NC_TARGET_PATH/enabled
+    check_error "Enable netconsole."
+    
+}
+
+function check_netconsole()
+{
+    check_netconsole_module_and_fs
+
+    check_file $NC_TARGET_PATH/local_ip reconfig_netconsole
+    check_file $NC_TARGET_PATH/dev_name reconfig_netconsole
+    check_file $NC_TARGET_PATH/remote_ip reconfig_netconsole
+    check_file $NC_TARGET_PATH/remote_port reconfig_netconsole
+    check_file $NC_TARGET_PATH/remote_mac reconfig_netconsole
+
+    check_file_content $NC_TARGET_PATH/local_ip $LOCAL_ADDR reconfig_netconsole
+    check_file_content $NC_TARGET_PATH/dev_name $LOCAL_INT reconfig_netconsole
+    check_file_content $NC_TARGET_PATH/remote_ip $REMOTE_ADDR reconfig_netconsole
+    check_file_content $NC_TARGET_PATH/remote_port $REMOTE_PORT reconfig_netconsole
+    check_file_content $NC_TARGET_PATH/remote_mac $REMOTE_MAC reconfig_netconsole
+
+        
+         
+}
+
+while [ 1 ]
+do
+
+check_netconsole
+echo "It seems all right. Go to sleep..."
+sleep 60
+
+done
