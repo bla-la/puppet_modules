@@ -1,0 +1,19 @@
+#!/bin/bash
+export JAVA_HOME="<%=@javaHome%>"
+ZK_HOME="<%=@zkBasePath%>"
+export CLASS_PATH="${ZK_HOME}/zookeeper-3.4.6.jar:\
+${ZK_HOME}/lib/slf4j-api-1.6.1.jar:\
+${ZK_HOME}/lib/slf4j-log4j12-1.6.1.jar:\
+${ZK_HOME}/lib/log4j-1.2.16.jar:\
+${ZK_HOME}/lib/netty-3.7.0.Final.jar:\
+${ZK_HOME}/lib/jline-0.9.94.jar:\
+${ZK_HOME}/conf"
+JVM_PARAM="-Dzookeeper.log.dir=<%=@dataDir%>/log -Dzookeeper.root.logger=INFO,CONSOLE"
+
+
+exec chpst -u <%=@user%> ${JAVA_HOME}/bin/java \
+${JVM_PARAM} \
+-Dcom.sun.management.jmxremote \
+-Dcom.sun.management.jmxremote.local.only=false \
+-cp ${CLASS_PATH} \
+org.apache.zookeeper.server.quorum.QuorumPeerMain <%=@cofigPath%>/zoo.cfg

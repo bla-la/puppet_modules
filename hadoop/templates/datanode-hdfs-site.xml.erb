@@ -21,4 +21,23 @@
         <name>dfs.datanode.data.dir</name>
         <value>file://<%=@dataDir%></value>
     </property>
+    <!--
+    <property>
+        <name></name>
+        <value></value>
+    </property>
+    -->
+    <property>
+        <name>dfs.support.append</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>dfs.datanode.sync.behind.writes</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>dfs.datanode.handler.count</name>
+        <value>16</value>
+    </property>
+
 </configuration>

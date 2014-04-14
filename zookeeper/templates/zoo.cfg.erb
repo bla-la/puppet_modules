@@ -1,0 +1,9 @@
+<%_zkHosts = @zkHosts%>
+tickTime=2000
+dataDir=<%=@dataDir%>
+clientPort=<%=@clientPort%>
+initLimit=5
+syncLimit=2
+<%_zkHosts.each do |param,value| -%>
+<%=param%>=<%=value%>:2888:3888
+<%end -%>
