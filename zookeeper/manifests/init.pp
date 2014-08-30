@@ -9,19 +9,19 @@ class zookeeper( $zkHosts,
             $jdkVersion = "v7_51",
             $store = "/store")
 {
-    apt::install{"jdk-v7.51":}
-    apt::install{"${pkg}":}
+  include jdk
+  apt::install{"${pkg}":}
 
-    group { $group: 
-        ensure => "present"
-    }
-    user { $user:
-        comment => "User for run hadoop services",
-        home    => "$base",
-        shell   => "/bin/false",
-        managehome => 'true',
-        groups => $group
-    }
+  group { $group: 
+    ensure => "present"
+  }
+  user { $user:
+    comment => "User for run hadoop services",
+    home    => "$base",
+    shell   => "/bin/false",
+    managehome => 'true',
+    groups => $group
+  }
 
-    zookeeper::common{"zookeeper-common":}
+  zookeeper::common{"zookeeper-common":}
 }

@@ -1,0 +1,3 @@
+#!/bin/bash
+export JAVA_HOME="<%=@javaHome%>"
+exec chpst -u <%=@user%> <%=@execCmd%> --config <%=@cofigPath%> datanode

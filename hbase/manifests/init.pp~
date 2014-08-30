@@ -1,0 +1,28 @@
+class hbase( $defaultFs,
+             $resourceManagerHost,
+            $defaultFsPort = 8020,
+            $user = "hbase",
+            $group = "hbase",
+            $pkg = "hbase-v0.98.1", 
+            $version = "v0_98_1",
+            $base = "/opt/hbase",
+            $jdkPath = "/opt/jdk",
+            $jdkVersion = "v7_51",
+            $store = "/store")
+{
+    apt::install{"jdk-v7.51":}
+    apt::install{"${pkg}":}
+
+    group { $group: 
+        ensure => "present"
+    }
+    user { $user:
+        comment => "User for run hbase services",
+        home    => "$base",
+        shell   => "/bin/false",
+        managehome => 'true',
+        groups => $group
+    }
+
+    hbase::common{"hbase-common":}
+}

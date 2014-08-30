@@ -10,19 +10,19 @@ class hadoop( $defaultFs,
             $jdkVersion = "v7_51",
             $store = "/store")
 {
-  include jdk
-  apt::install{"${pkg}":}
+    apt::install{"jdk-v7.51":}
+    apt::install{"${pkg}":}
 
-  group { $group: 
-    ensure => "present"
-  }
-  user { $user:
-    comment => "User for run hadoop services",
-    home    => "$base",
-    shell   => "/bin/false",
-    managehome => 'true',
-    groups => $group
-  }
+    group { $group: 
+        ensure => "present"
+    }
+    user { $user:
+        comment => "User for run hadoop services",
+        home    => "$base",
+        shell   => "/bin/false",
+        managehome => 'true',
+        groups => $group
+    }
 
-  hadoop::common{"hadoop-common":}
+    hadoop::common{"hadoop-common":}
 }
