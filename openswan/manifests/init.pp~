@@ -1,0 +1,5 @@
+class openswan(private_net="192.168.30.0/24"){
+      apt::install{"openswan":}
+      apt::install{"xl2tpd":}
+      apt::install{"ppp":}
+}

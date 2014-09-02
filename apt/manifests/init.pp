@@ -16,14 +16,14 @@ class apt(
     }
 
 
-    file { 'sources.list':
-        ensure => present,
-        path => "${root}/sources.list",
-        owner => root,
-        group => root,
-        mode => '0644',
-        source => "puppet:///modules/apt/source.list"
-    }
+#    file { 'sources.list':
+#        ensure => present,
+#        path => "${root}/sources.list",
+#        owner => root,
+#        group => root,
+#        mode => '0644',
+#        source => "puppet:///modules/apt/source.list"
+#    }
 
 
     apt::update{"apt-update":}
